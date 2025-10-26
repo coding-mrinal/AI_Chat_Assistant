@@ -10,12 +10,6 @@
   body {
     @apply transition-colors duration-300;
   }
-  
-  /* Prevent mobile viewport height issues */
-  html, body, #root {
-    height: 100%;
-    overflow: hidden;
-  }
 }
 
 @layer components {
@@ -54,13 +48,6 @@
 }
 
 .scrollbar-none {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Fix iOS Safari bottom bar issues */
-@supports (-webkit-touch-callout: none) {
-  .h-screen {
-    height: -webkit-fill-available;
-  }
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
