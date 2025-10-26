@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiChevronDown, FiCheck } from 'react-icons/fi';
 import { AI_PERSONAS } from '../config';
 import { useChat } from '../context/ChatContext';
@@ -8,6 +8,18 @@ const PersonaSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const currentPersona = AI_PERSONAS[selectedPersona];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.persona-selector')) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const getColorClasses = (color) => {
     const colors = {
@@ -22,71 +34,69 @@ const PersonaSelector = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative persona-selector">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 
+        className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 
                  border border-gray-200 dark:border-gray-700 rounded-lg
-                 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
+                 w-full md:w-auto min-w-0"
       >
-        <div className={`w-8 h-8 rounded-full ${getColorClasses(currentPersona.color)} 
-                      flex items-center justify-center text-white`}>
-          <span className="text-lg">{currentPersona.avatar}</span>
+        <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full ${getColorClasses(currentPersona.color)} 
+                      flex items-center justify-center text-white flex-shrink-0`}>
+          <span className="text-sm sm:text-lg">{currentPersona.avatar}</span>
         </div>
-        <div className="text-left">
-          <div className="text-sm font-medium text-gray-900 dark:text-white">
+        <div className="text-left min-w-0 flex-1">
+          <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
             {currentPersona.name}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="text-xs text-gray-500 dark:text-gray-400 truncate hidden sm:block">
             {currentPersona.description}
           </div>
         </div>
-        <FiChevronDown className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <FiChevronDown className={`text-gray-400 transition-transform flex-shrink-0 ${
+          isOpen ? 'rotate-180' : ''
+        }`} />
       </button>
 
       {isOpen && (
-        <>
-          <div 
-            className="fixed inset-0 z-10" 
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute top-full left-0 mt-2 w-80 bg-white dark:bg-gray-800 
-                        border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-20">
-            <div className="p-2">
-              <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 px-3 py-2 uppercase">
-                Choose AI Persona
-              </div>
-              {Object.values(AI_PERSONAS).map((persona) => (
-                <button
-                  key={persona.id}
-                  onClick={() => {
-                    updatePersona(persona.id);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg
-                           hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors
-                           ${selectedPersona === persona.id ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
-                >
-                  <div className={`w-10 h-10 rounded-full ${getColorClasses(persona.color)} 
-                                flex items-center justify-center text-white flex-shrink-0`}>
-                    <span className="text-xl">{persona.avatar}</span>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {persona.name}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {persona.description}
-                    </div>
-                  </div>
-                  {selectedPersona === persona.id && (
-                    <FiCheck className="text-green-500 flex-shrink-0" />
-                  )}
-                </button>
-              ))}
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 
+                      border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50
+                      max-h-80 overflow-y-auto">
+          <div className="p-2">
+            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 px-3 py-2 uppercase">
+              Choose AI Persona
             </div>
+            {Object.values(AI_PERSONAS).map((persona) => (
+              <button
+                key={persona.id}
+                onClick={() => {
+                  updatePersona(persona.id);
+                  setIsOpen(false);
+                }}
+                className={`w-full flex items-center gap-2 sm:gap-3 px-3 py-2 rounded-lg
+                         hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors
+                         ${selectedPersona === persona.id ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
+              >
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${getColorClasses(persona.color)} 
+                              flex items-center justify-center text-white flex-shrink-0`}>
+                  <span className="text-base sm:text-xl">{persona.avatar}</span>
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {persona.name}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {persona.description}
+                  </div>
+                </div>
+                {selectedPersona === persona.id && (
+                  <FiCheck className="text-green-500 flex-shrink-0 text-sm sm:text-base" />
+                )}
+              </button>
+            ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

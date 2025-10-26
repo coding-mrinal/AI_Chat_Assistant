@@ -1,4 +1,3 @@
-// FilePreview.jsx (new file)
 import React, { useState, useEffect } from 'react';
 import { FiX, FiFile, FiImage, FiFileText } from 'react-icons/fi';
 
@@ -23,19 +22,27 @@ const FilePreview = ({ file, onRemove }) => {
   };
 
   const getFileIcon = () => {
-    if (isImage) return <FiImage className="text-emerald-500" />;
-    if (file.type === 'application/pdf') return <FiFileText className="text-red-500" />;
-    return <FiFile className="text-blue-500" />;
+    if (isImage) return <FiImage className="text-emerald-500 text-sm sm:text-base" />;
+    if (file.type === 'application/pdf') return <FiFileText className="text-red-500 text-sm sm:text-base" />;
+    return <FiFile className="text-blue-500 text-sm sm:text-base" />;
+  };
+
+  const truncateFileName = (name, maxLength = 20) => {
+    if (name.length <= maxLength) return name;
+    const extension = name.split('.').pop();
+    const nameWithoutExt = name.slice(0, -(extension.length + 1));
+    const truncatedName = nameWithoutExt.slice(0, maxLength - extension.length - 3);
+    return `${truncatedName}...${extension}`;
   };
 
   return (
     <div className="relative group">
-      <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-700 
+      <div className="flex items-center gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-white dark:bg-slate-700 
                     rounded-lg border border-slate-200 dark:border-slate-600 
                     hover:border-violet-300 dark:hover:border-violet-600 
-                    transition-all duration-200">
+                    transition-all duration-200 max-w-[200px] sm:max-w-[240px]">
         {isImage && preview ? (
-          <div className="w-10 h-10 rounded overflow-hidden">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded overflow-hidden flex-shrink-0">
             <img 
               src={preview} 
               alt={file.name} 
@@ -43,16 +50,16 @@ const FilePreview = ({ file, onRemove }) => {
             />
           </div>
         ) : (
-          <div className="w-10 h-10 flex items-center justify-center 
-                        bg-slate-100 dark:bg-slate-600 rounded">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center 
+                        bg-slate-100 dark:bg-slate-600 rounded flex-shrink-0">
             {getFileIcon()}
           </div>
         )}
         
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 
-                      truncate max-w-[150px]">
-            {file.name}
+          <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 
+                      truncate" title={file.name}>
+            {truncateFileName(file.name, window.innerWidth < 640 ? 15 : 20)}
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {formatFileSize(file.size)}
@@ -61,13 +68,14 @@ const FilePreview = ({ file, onRemove }) => {
         
         <button
           onClick={onRemove}
-          className="p-1 rounded-full bg-slate-100 dark:bg-slate-600 
+          className="p-0.5 sm:p-1 rounded-full bg-slate-100 dark:bg-slate-600 
                    hover:bg-rose-100 dark:hover:bg-rose-900/30
                    text-slate-500 hover:text-rose-500 
                    dark:text-slate-400 dark:hover:text-rose-400
-                   transition-all duration-200 opacity-0 group-hover:opacity-100"
+                   transition-all duration-200 opacity-70 group-hover:opacity-100
+                   flex-shrink-0"
         >
-          <FiX className="text-sm" />
+          <FiX className="text-xs sm:text-sm" />
         </button>
       </div>
     </div>
