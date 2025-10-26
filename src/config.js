@@ -7,7 +7,7 @@ export const config = {
 };
 
 export const AI_CONFIG = {
-  model: 'gemini-2.5-pro',
+  model: 'gemini-2.5-flash',
   temperature: 0.7,
   maxOutputTokens: 2048,
   topP: 0.8,
